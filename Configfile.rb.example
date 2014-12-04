@@ -1,0 +1,3 @@
+module VagrantConfig
+    SITES_PATH = '/path/to/sites'
+end
