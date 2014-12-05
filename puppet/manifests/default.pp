@@ -103,5 +103,65 @@ class system {
   }
 }
 
+/**
+ * Nginx Configuration
+ */
+
+class nginx
+{
+  $apps = [
+    'nginx',
+  ]
+
+  package { 'nginx':
+    name => $apps,
+    ensure => 'latest',
+  }
+
+  file { '/etc/nginx/nginx.conf':
+    ensure => file,
+    source => '/vagrant/files/etc/nginx/nginx.conf',
+    force  => true,
+    require => [Package['nginx']],
+    notify => Service['nginx'],
+  }
+
+  file { '/etc/nginx/sites-available/':
+    ensure => directory,
+    source => '/vagrant/files/etc/nginx/sites-available/',
+    force  => true,
+    recurse => true,
+    require => [Package['nginx']],
+    notify => Service['nginx'],
+  }
+
+  exec { 'enable-sites':
+    command => 'rm -f /etc/nginx/sites-enabled/*.conf && ln -s /etc/nginx/sites-available/*.conf /etc/nginx/sites-enabled/',
+    user => 'root',
+    group => 'root',
+    require => [Package['nginx'], File['/etc/nginx/sites-available/']],
+    notify => Service['nginx'],
+  }
+
+  file { '/etc/nginx/conf.d/':
+    ensure => directory,
+    source => '/vagrant/files/etc/nginx/conf.d/',
+    force  => true,
+    recurse => true,
+    require => [Package['nginx']],
+    notify => Service['nginx'],
+  }
+
+  # ensure apache service is up and running
+  service { 'nginx':
+    ensure => running,
+    enable => true,
+    hasrestart => true,
+    restart => 'service nginx restart',
+    require => Package['nginx'],
+  }
+}
+
 include prepare
 include system
+include nginx

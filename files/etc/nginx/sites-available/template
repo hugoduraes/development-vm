@@ -1,0 +1,55 @@
+# www to non-www redirect -- duplicate content is BAD:
+# https://github.com/h5bp/html5-boilerplate/blob/5370479476dceae7cc3ea105946536d6bc0ee468/.htaccess#L362
+# Choose between www and non-www, listen on the *wrong* one and redirect to
+# the right one -- http://wiki.nginx.org/Pitfalls#Server_Name
+server {
+  # don't forget to tell on which port this server listens
+  listen 80;
+
+  # listen on the www host
+  server_name www.<domain>.dev;
+
+  # and redirect to the non-www host (declared below)
+  return 301 $scheme://<domain>.dev$request_uri;
+}
+
+server {
+  # listen 80 default_server deferred; # for Linux
+  # listen 80 default_server accept_filter=httpready; # for FreeBSD
+  listen 80;
+
+  # The host name to respond to
+  server_name <domain>.dev;
+
+  # Path for document root
+  root /data/www/<domain>;
+  index index.html index.php;
+
+  #Specify a charset
+  charset utf-8;
+
+  # Custom 404 page
+  #error_page 404 /404.html;
+
+  # Include the component config parts for h5bp
+  include conf.d/h5bp.conf;
+
+  location / {
+    # First attempt to serve request as file, then
+    # as directory, then fall back to index.html
+    try_files $uri $uri/ /index.html;
+  }
+
+  location ~ "^(.+\.php)($|/)" {
+    fastcgi_split_path_info ^(.+\.php)(.*)$;
+
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_param SERVER_NAME $host;
+
+    fastcgi_pass unix:/tmp/php56-fpm.sock;
+
+    include fastcgi_params;
+  }
+}
