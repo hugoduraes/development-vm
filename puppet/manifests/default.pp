@@ -104,10 +104,6 @@ class system {
     restart => 'service dnsmasq restart',
     require => [Package['dnsmasq'], File['/etc/resolver'], File['/etc/dnsmasq.conf']],
   }
-
-  exec { 'npm install -g gulp bower strongloop':
-    require => Package['nodejs'],
-  }
 }
 
 /**
@@ -278,7 +274,67 @@ class php
   }
 }
 
+/**
+ * Utilities
+ */
+
+class utils {
+  exec { 'install composer':
+    command => 'curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer',
+    cwd => '/tmp',
+    user => root,
+    group => root,
+    unless => 'test -f /usr/local/bin/composer',
+    require => Exec['install php'],
+  }
+
+  exec { 'npm install -g gulp bower strongloop':
+    require => Package['nodejs'],
+  }
+
+  file { '/data/phalcon-devtools':
+    ensure => directory,
+    source => '/vagrant/files/data/phalcon-devtools',
+    force => true,
+    recurse => true,
+    require => Exec['install composer'],
+  }
+
+  exec { 'install phalcon-devtools':
+    command => 'sudo composer update',
+    cwd => '/data/phalcon-devtools',
+    require => File['/data/phalcon-devtools'],
+  }
+
+  exec { 'link phalcon-devtools':
+    command => 'rm -f /usr/bin/phalcon && ln -s /data/phalcon-devtools/vendor/phalcon/devtools/phalcon.php /usr/bin/phalcon && chmod ugo+x /usr/bin/phalcon',
+    user => root,
+    group => root,
+    cwd => '/data/phalcon-devtools',
+    unless => 'test -f /usr/bin/phalcon',
+    require => Exec['install phalcon-devtools'],
+  }
+
+  /*exec { 'download wkhtmltox':
+    command => 'wget -qnv http://downloads.sourceforge.net/project/wkhtmltopdf/archive/0.12.0/wkhtmltox-linux-i386_0.12.0-03c001d.tar.xz -O /tmp/wkhtmltox.tar.xz',
+    unless => 'test -f /usr/local/bin/wkhtmltoimage',
+  }
+
+  exec { 'untar wkhtmltox':
+    command => 'tar -xf /tmp/wkhtmltox.tar.xz -C /tmp',
+    unless => 'test -f /usr/local/bin/wkhtmltoimage',
+    require => Exec['download wkhtmltox'],
+  }
+
+  exec { 'install wkhtmltox binaries':
+    command => 'cp /tmp/wkhtmltox/bin/* /usr/local/bin/',
+    unless => 'test -f /usr/local/bin/wkhtmltoimage',
+    require => Exec['untar wkhtmltox'],
+  }*/
+}
+
 include prepare
 include system
 include nginx
 include php
+include utils
