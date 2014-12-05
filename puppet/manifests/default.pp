@@ -68,6 +68,36 @@ class system {
     require => [Class['prepare'], Exec['apt-get update']],
   }
 
+  package { 'dnsmasq':
+    ensure  => installed,
+    require => Package[$apps],
+  }
+
+  file { '/etc/dnsmasq.conf':
+    ensure => file,
+    source => '/vagrant/files/etc/dnsmasq.conf',
+    force  => true,
+    require => Package['dnsmasq'],
+    notify => Service['dnsmasq'],
+  }
+
+  file { '/etc/resolver':
+    ensure => directory,
+    source => '/vagrant/files/etc/resolver',
+    force  => true,
+    require => Package['dnsmasq'],
+    notify => Service['dnsmasq'],
+  }
+
+  # ensure dnsmasq service is up and running
+  service { 'dnsmasq':
+    ensure => running,
+    enable => true,
+    hasrestart => true,
+    restart => 'service dnsmasq restart',
+    require => [Package['dnsmasq'], File['/etc/resolver'], File['/etc/dnsmasq.conf']],
+  }
+
   exec { 'npm install -g gulp bower strongloop':
     require => Package['nodejs'],
   }
