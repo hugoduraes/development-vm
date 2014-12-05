@@ -58,7 +58,7 @@ class system {
   	'git',
   	'nodejs',
     'libjpeg-dev',
-    'libpng-dev',
+    'libpng12-dev',
   	'libnotify-bin',
     'mongodb-org'
   ]
