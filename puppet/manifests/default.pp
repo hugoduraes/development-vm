@@ -119,6 +119,7 @@ class nginx
   package { 'nginx':
     name => $apps,
     ensure => 'latest',
+    require => [Class['prepare'], Exec['apt-get update']],
   }
 
   file { '/etc/nginx/nginx.conf':
@@ -180,6 +181,7 @@ class php
     user => 'root',
     group => 'root',
     unless => "test -f /home/vagrant/php-${phpVersion}.tar.gz",
+    require => [Class['prepare'], Exec['apt-get update']],
   }
 
   exec { 'unpack php':
