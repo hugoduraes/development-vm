@@ -288,7 +288,18 @@ class utils {
     require => Exec['install php'],
   }
 
-  exec { 'npm install -g gulp bower strongloop':
+  exec { 'npm install -g gulp':
+    unless => 'test -f /usr/bin/gulp',
+    require => Package['nodejs'],
+  }
+
+  exec { 'npm install -g bower':
+    unless => 'test -f /usr/bin/bower',
+    require => Package['nodejs'],
+  }
+
+  exec { 'npm install -g strongloop':
+    unless => 'test -f /usr/bin/slc',
     require => Package['nodejs'],
   }
 
