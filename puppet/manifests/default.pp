@@ -284,8 +284,6 @@ class utils {
   exec { 'install composer':
     command => 'curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer',
     cwd => '/tmp',
-    user => root,
-    group => root,
     unless => 'test -f /usr/local/bin/composer',
     require => Exec['install php'],
   }
