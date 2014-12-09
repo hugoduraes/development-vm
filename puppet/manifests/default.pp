@@ -308,8 +308,6 @@ class utils {
 
   exec { 'link phalcon-devtools':
     command => 'rm -f /usr/bin/phalcon && ln -s /data/phalcon-devtools/vendor/phalcon/devtools/phalcon.php /usr/bin/phalcon && chmod ugo+x /usr/bin/phalcon',
-    user => root,
-    group => root,
     cwd => '/data/phalcon-devtools',
     unless => 'test -f /usr/bin/phalcon',
     require => Exec['install phalcon-devtools'],
