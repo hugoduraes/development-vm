@@ -303,19 +303,24 @@ class utils {
     require => Exec['install php'],
   }
 
+  exec { 'update npm':
+    command => 'npm install -g npm',
+    require => Package['nodejs'],
+  }
+
   exec { 'npm install -g gulp':
     unless => 'test -f /usr/bin/gulp',
-    require => Package['nodejs'],
+    require => Exec['update npm'],
   }
 
   exec { 'npm install -g bower':
     unless => 'test -f /usr/bin/bower',
-    require => Package['nodejs'],
+    require => Exec['update npm'],
   }
 
   exec { 'npm install -g strongloop':
     unless => 'test -f /usr/bin/slc',
-    require => Package['nodejs'],
+    require => Exec['update npm'],
   }
 
   file { '/data/phalcon-devtools':
