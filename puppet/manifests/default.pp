@@ -277,6 +277,21 @@ class php
 }
 
 /**
+ * MySQL
+ */
+
+class mysql {
+  class { '::mysql::server':
+    root_password => 'root',
+    override_options => {
+      'mysqld' => {
+        'bind-address' => '0.0.0.0'
+      }
+    },
+  }
+}
+
+/**
  * Utilities
  */
 
@@ -346,4 +361,5 @@ include prepare
 include system
 include nginx
 include php
+include mysql
 include utils
