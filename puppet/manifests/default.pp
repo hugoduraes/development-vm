@@ -274,53 +274,13 @@ class php
     restart => 'service php-fpm restart',
     subscribe => [File["/data/php-${phpVersionPath}/lib/php.ini"], File["/data/php-${phpVersionPath}/etc/php-fpm.conf"]],
   }
-}
 
-/**
- * MySQL
- */
-
-class mysql {
-  class { '::mysql::server':
-    root_password => 'root',
-    override_options => {
-      'mysqld' => {
-        'bind-address' => '0.0.0.0'
-      }
-    },
-  }
-}
-
-/**
- * Utilities
- */
-
-class utils {
+  # PHP Utils
   exec { 'install composer':
     command => 'curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer',
     cwd => '/tmp',
     unless => 'test -f /usr/local/bin/composer',
     require => Exec['install php'],
-  }
-
-  exec { 'update npm':
-    command => 'npm install -g npm',
-    require => Package['nodejs'],
-  }
-
-  exec { 'npm install -g gulp':
-    unless => 'test -f /usr/bin/gulp',
-    require => Exec['update npm'],
-  }
-
-  exec { 'npm install -g bower':
-    unless => 'test -f /usr/bin/bower',
-    require => Exec['update npm'],
-  }
-
-  exec { 'npm install -g strongloop':
-    unless => 'test -f /usr/bin/slc',
-    require => Exec['update npm'],
   }
 
   file { '/data/phalcon-devtools':
@@ -343,6 +303,69 @@ class utils {
     unless => 'test -f /usr/local/bin/phalcon',
     require => Exec['install phalcon-devtools'],
   }
+}
+
+/**
+ * MySQL
+ */
+
+class mysql {
+  class { '::mysql::server':
+    root_password => 'root',
+    override_options => {
+      'mysqld' => {
+        'bind-address' => '0.0.0.0'
+      }
+    },
+  }
+}
+
+/**
+ * Utilities
+ */
+
+class utils {
+  file { '/home/vagrant/npm-global':
+    ensure => directory,
+    owner => 'vagrant',
+    group => 'vagrant',
+    require => Package['nodejs'],
+  }
+
+  exec { 'change npm default dir':
+    command => "npm config set prefix '/home/vagrant/npm-global' && echo 'export PATH=/home/vagrant/npm-global/bin:\$PATH' >> /home/vagrant/.profile",
+    user => 'vagrant',
+    group => 'vagrant',
+    require => File['/home/vagrant/npm-global'],
+  }
+
+  exec { 'update npm':
+    command => 'npm install -g --prefix /home/vagrant/npm-global npm',
+    user => 'vagrant',
+    group => 'vagrant',
+    require => Exec['change npm default dir'],
+  }
+
+  exec { 'npm install -g --prefix /home/vagrant/npm-global gulp':
+    unless => 'test -f /home/vagrant/npm-global/bin/gulp',
+    user => 'vagrant',
+    group => 'vagrant',
+    require => Exec['update npm'],
+  }
+
+  exec { 'npm install -g --prefix /home/vagrant/npm-global bower':
+    unless => 'test -f /home/vagrant/npm-global/bin/bower',
+    user => 'vagrant',
+    group => 'vagrant',
+    require => Exec['update npm'],
+  }
+
+  /*exec { 'npm install -g --prefix /home/vagrant/npm-global strongloop':
+    unless => 'test -f /home/vagrant/npm-global/bin/slc',
+    user => 'vagrant',
+    group => 'vagrant',
+    require => Exec['update npm'],
+  }*/
 
   /*exec { 'download wkhtmltox':
     command => 'wget -qnv http://downloads.sourceforge.net/project/wkhtmltopdf/archive/0.12.0/wkhtmltox-linux-i386_0.12.0-03c001d.tar.xz -O /tmp/wkhtmltox.tar.xz',
