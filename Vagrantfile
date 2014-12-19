@@ -49,4 +49,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.manifest_file  = "default.pp"
     puppet.module_path = "puppet/modules"
   end
+
+  # Custom configurations
+  #
+  config.vm.hostname = "vm.dev"
 end
