@@ -53,4 +53,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Custom configurations
   #
   config.vm.hostname = "vm.dev"
+  config.hostsupdater.aliases = ["vm"]
+  config.hostsupdater.remove_on_suspend = true
 end
