@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.memory = 512
   end
 
-  # Enable provisioning with Puppet stand alone.  Puppet manifests
+  # Enable provisioning with Puppet stand alone. Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
   # You will need to create the manifests directory and a manifest in
   # the file default.pp in the manifests_path directory.
