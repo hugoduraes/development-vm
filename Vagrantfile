@@ -35,10 +35,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.memory = 512
   end
 
-  # shell provision
-  #
-  #config.vm.provision :shell, :path => "scripts/puppet-upgrade.sh"
-
   # Enable provisioning with Puppet stand alone.  Puppet manifests
   # are contained in a directory path relative to this Vagrantfile.
   # You will need to create the manifests directory and a manifest in
