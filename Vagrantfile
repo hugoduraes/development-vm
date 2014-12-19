@@ -16,12 +16,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   config.vm.box = "ubuntu/trusty64"
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # Specify a static IP address for the machine.
+  # This lets you access the Vagrant managed machine using a static, known IP.
   #
-  config.vm.network "private_network", ip: "192.168.200.2"
-  #config.vm.network "forwarded_port", guest: 3000, host: 3000
+  config.vm.network "private_network", ip: "10.10.10.10"
 
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
