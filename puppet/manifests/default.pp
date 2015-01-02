@@ -172,7 +172,7 @@ class nginx
 
 class php
 {
-  $phpVersion = '5.6.3'
+  $phpVersion = '5.6.4'
   $phpVersionPath = '5.6'
 
   exec { 'download php':
